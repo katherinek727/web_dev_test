@@ -1176,6 +1176,7 @@ body {
     justify-content: center;
     gap: 16px;
     margin-top: 28px;
+    display: none;
 }
 
 .stages_slider-item {
@@ -1212,6 +1213,10 @@ body {
     .stages-grid-66-e {
         margin-top: 30px;
     } */
+
+    .stage_slider_btn {
+        display: flex;
+    }
 }
 
 .stages_slider {
