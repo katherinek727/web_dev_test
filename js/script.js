@@ -23,31 +23,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Future features will be added here
-    document.addEventListener('DOMContentLoaded', function () {
-        const slider = document.getElementById('stagesSlider');
-        if (!slider) return;
+    // 2. bender section slider
+    const slides = Array.from(document.querySelector('.stages_slider').children)
+        .filter(child => child.nodeType === 1); // Only element nodes
 
-        let currentSlide = 0;
-        const totalSlides = 3;
+    const dots = document.querySelectorAll('.slider-dots .dot');
+    const prev = document.querySelector('.slider-arrow.left');
+    const next = document.querySelector('.slider-arrow.right');
 
-        function moveSlider() {
-            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
+    let currentIndex = 0;
 
-        // 이전/다음 버튼 추가 (HTML에 controls 넣었다면)
-        window.nextStage = function () {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            moveSlider();
-        }
+    function showSlide(index) {
+        slides.forEach(slide => slide.style.display = 'none');
+        dots.forEach(dot => dot.classList.remove('active'));
+        slides[index].style.display = 'block';
+        dots[index].classList.add('active');
+    }
 
-        window.prevStage = function () {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            moveSlider();
+    // Initialize
+    showSlide(currentIndex);
+
+    // Arrows
+    next.addEventListener('click', () => {
+        if (currentIndex < slides.length - 1) {  // stop at last slide
+            currentIndex++;
+            showSlide(currentIndex);
         }
     });
 
-    // 3. Simple Slider
+    prev.addEventListener('click', () => {
+        if (currentIndex > 0) {  // stop at first slide
+            currentIndex--;
+            showSlide(currentIndex);
+        }
+    });
+
+    // Dots
+    dots.forEach((dot, idx) => {
+        dot.addEventListener('click', () => {
+            currentIndex = idx;
+            showSlide(currentIndex);
+        });
+    });
+
+    // 3. lecture section Slider
     document.addEventListener('DOMContentLoaded', function () {
         const slider = document.getElementById('slider');
         const prevBtn = document.getElementById('prevBtn');
