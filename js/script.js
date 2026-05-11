@@ -4,15 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Anchor Buttons Smooth Scroll
     const anchorButtons = document.querySelectorAll('a[href^="#"], button[data-target]');
-    
+
     anchorButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href') || this.getAttribute('data-target');
-            
+
             if (targetId && targetId.startsWith('#')) {
                 e.preventDefault();
                 const targetElement = document.querySelector(targetId);
-                
+
                 if (targetElement) {
                     targetElement.scrollIntoView({
                         behavior: 'smooth',
@@ -24,127 +24,145 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Future features will be added here
-    // - Running Line (Marquee)
-    // - Participants Carousel
-    // - Stages Carousel
-    // - Mobile menu, etc.
+    document.addEventListener('DOMContentLoaded', function () {
+        const slider = document.getElementById('stagesSlider');
+        if (!slider) return;
+
+        let currentSlide = 0;
+        const totalSlides = 3;
+
+        function moveSlider() {
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        // 이전/다음 버튼 추가 (HTML에 controls 넣었다면)
+        window.nextStage = function () {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            moveSlider();
+        }
+
+        window.prevStage = function () {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            moveSlider();
+        }
+    });
 
     // 3. Simple Slider
-       document.addEventListener('DOMContentLoaded', function () {
-            const slider = document.getElementById('slider');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const currentEl = document.getElementById('currentSlide');
-            const currentE2 = document.getElementById('currentSlide2');
+    document.addEventListener('DOMContentLoaded', function () {
+        const slider = document.getElementById('slider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentEl = document.getElementById('currentSlide');
+        const currentE2 = document.getElementById('currentSlide2');
 
-            const totalCards = 6;
-            let currentIndex = 0;
-            let autoInterval = null;
-            let isMoving = false;
+        const totalCards = 6;
+        let currentIndex = 0;
+        let autoInterval = null;
+        let isMoving = false;
 
-            function getCardWidth() {
-                const card = slider.querySelector('.player-card');
-                return card ? card.offsetWidth + 20 : 360; // gap 20px
+        function getCardWidth() {
+            const card = slider.querySelector('.player-card');
+            return card ? card.offsetWidth + 20 : 360; // gap 20px
+        }
+
+        function setupInfiniteLoop() {
+            const cards = Array.from(slider.children);
+
+            for (let i = 0; i < 2; i++) {
+                cards.forEach(card => {
+                    slider.insertBefore(card.cloneNode(true), slider.firstChild);
+                });
             }
 
-            function setupInfiniteLoop() {
-                const cards = Array.from(slider.children);
-
-                for (let i = 0; i < 2; i++) {
-                    cards.forEach(card => {
-                        slider.insertBefore(card.cloneNode(true), slider.firstChild);
-                    });
-                }
-
-                for (let i = 0; i < 2; i++) {
-                    cards.forEach(card => {
-                        slider.appendChild(card.cloneNode(true));
-                    });
-                }
+            for (let i = 0; i < 2; i++) {
+                cards.forEach(card => {
+                    slider.appendChild(card.cloneNode(true));
+                });
             }
+        }
 
-            setupInfiniteLoop();
+        setupInfiniteLoop();
 
-            function updateCurrentPage() {
-                const realIndex = currentIndex % totalCards;
-                currentEl.textContent = realIndex + 1;
-                currentE2.textContent = realIndex + 1;
-            }
+        function updateCurrentPage() {
+            const realIndex = currentIndex % totalCards;
+            currentEl.textContent = realIndex + 1;
+            currentE2.textContent = realIndex + 1;
+        }
 
-            function moveToIndex(index, smooth = true) {
-                if (isMoving) return;
-                isMoving = true;
+        function moveToIndex(index, smooth = true) {
+            if (isMoving) return;
+            isMoving = true;
 
-                const cardWidth = getCardWidth();
-                slider.style.transition = smooth ? 'transform 0.6s ease-in-out' : 'none';
-                slider.style.transform = `translateX(-${index * cardWidth}px)`;
+            const cardWidth = getCardWidth();
+            slider.style.transition = smooth ? 'transform 0.6s ease-in-out' : 'none';
+            slider.style.transform = `translateX(-${index * cardWidth}px)`;
 
+            setTimeout(() => {
+                isMoving = false;
+            }, smooth ? 650 : 10);
+        }
+
+        function nextSlide() {
+            currentIndex++;
+            moveToIndex(currentIndex);
+
+            if (currentIndex >= totalCards * 3) {
                 setTimeout(() => {
-                    isMoving = false;
-                }, smooth ? 650 : 10);
+                    currentIndex = currentIndex % totalCards;
+                    moveToIndex(currentIndex, false);
+                }, 600);
             }
+            updateCurrentPage();
+        }
 
-            function nextSlide() {
-                currentIndex++;
-                moveToIndex(currentIndex);
+        function prevSlide() {
+            currentIndex--;
+            moveToIndex(currentIndex);
 
-                if (currentIndex >= totalCards * 3) {
-                    setTimeout(() => {
-                        currentIndex = currentIndex % totalCards;
-                        moveToIndex(currentIndex, false);
-                    }, 600);
-                }
-                updateCurrentPage();
-            }
-
-            function prevSlide() {
-                currentIndex--;
-                moveToIndex(currentIndex);
-
-                if (currentIndex < totalCards * 2) {
-                    setTimeout(() => {
-                        currentIndex += totalCards;
-                        moveToIndex(currentIndex, false);
-                    }, 600);
-                }
-                updateCurrentPage();
-            }
-
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetAutoSlide();
-            });
-
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                resetAutoSlide();
-            });
-
-            function startAutoSlide() {
-                if (autoInterval) clearInterval(autoInterval);
-                autoInterval = setInterval(nextSlide, 4000);
-            }
-
-            function resetAutoSlide() {
-                if (autoInterval) clearInterval(autoInterval);
-                startAutoSlide();
-            }
-
-            function init() {
-                currentIndex = totalCards * 2;
-                moveToIndex(currentIndex, false);
-                updateCurrentPage();
-
+            if (currentIndex < totalCards * 2) {
                 setTimeout(() => {
-                    startAutoSlide();
-                }, 800);
+                    currentIndex += totalCards;
+                    moveToIndex(currentIndex, false);
+                }, 600);
             }
+            updateCurrentPage();
+        }
 
-            init();
-
-            window.addEventListener('resize', () => {
-                moveToIndex(currentIndex, false);
-            });
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetAutoSlide();
         });
+
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetAutoSlide();
+        });
+
+        function startAutoSlide() {
+            if (autoInterval) clearInterval(autoInterval);
+            autoInterval = setInterval(nextSlide, 4000);
+        }
+
+        function resetAutoSlide() {
+            if (autoInterval) clearInterval(autoInterval);
+            startAutoSlide();
+        }
+
+        function init() {
+            currentIndex = totalCards * 2;
+            moveToIndex(currentIndex, false);
+            updateCurrentPage();
+
+            setTimeout(() => {
+                startAutoSlide();
+            }, 800);
+        }
+
+        init();
+
+        window.addEventListener('resize', () => {
+            moveToIndex(currentIndex, false);
+        });
+    });
     console.log('🔗 Smooth scroll anchors ready');
 });

@@ -855,7 +855,7 @@ body {
 .airplane-hidden {
     position: relative;
     max-width: 330px;
-    height: 165px;
+    height: 155px;
     display: none;
     z-index: 2;
 }
@@ -947,6 +947,10 @@ body {
 
     .airplane-hidden {
         display: block;
+    }
+
+    .stage-card3 {
+        height: 244px;
     }
 }
 
@@ -1134,3 +1138,4 @@ body {
     font-size: 16px;
     font-family: Golos Text;
 }
+
